@@ -1,9 +1,9 @@
 # YT-Filter
-Simple YouTube client without annoying ads and video recommendations.
+<strong>YT-Filter</strong> is simple YouTube client without annoying ads and video recommendations.
 
 ![](YT-Filter.gif)
 
-### Used:
+### App uses:
 * MVVM Architecture pattern;
 * Live data and ObservableField for data storage;
 * DataBinding for inflating layouts;
@@ -13,8 +13,9 @@ Simple YouTube client without annoying ads and video recommendations.
 * Picasso for uploading video thumbnails;
 
 ### In work:
+* Paging;
 * Changing the way to authenticate users from API key to OAuth 2.0 authentication protocol;
-* Adding RxPermissions to allow users to view saved videos and playlists;
+* Adding permissions to allow users to view saved videos and playlists;
 * Testing;
 
 
