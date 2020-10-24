@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home_navigation_item"
+        android:icon="@drawable/ic_home_fragment"
+        android:title="@string/home_fragment_title"/>
+
+    <item
+        android:id="@+id/liked_navigation_item"
+        android:icon="@drawable/ic_like_fragment"
+        android:title="@string/liked_videos_fragment_title"/>
+
+    <item
+        android:id="@+id/watch_later_navigation_item"
+        android:icon="@drawable/ic_watch_later_fragment"
+        android:title="@string/watch_later_video_fragment_title"/>
+
+</menu>

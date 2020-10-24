@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">YT Filter</string>
+    <string name="home_fragment_name">Home fragment</string>
+    <string name="liked_videos_fragment_name">Liked Videos Fragment fragment</string>
+    <string name="watch_later_fragment_name">Watch later fragment</string>
+    <string name="playlists_fragment_name">Playlists fragment</string>
+    <string name="playlists_fragment_title">Playlists</string>
+    <string name="home_fragment_title">Home</string>
+    <string name="liked_videos_fragment_title">Liked</string>
+    <string name="watch_later_video_fragment_title">Watch later</string>
+    <string name="home_label">Home</string>
+    <string name="liked_videos_label">Liked Videos</string>
+    <string name="playlists_label">Playlists</string>
+    <string name="watch_later_label">Watch Later</string>
+
+    <string name="thumbnail_image_view_desc">Youtube Video thumbnail image view</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_divider">•</string>
+    <string name="share_button_text">Share</string>
+    <string name="save_button_text">Save</string>
+
+</resources>
