@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_home_navigation_item_to_watch_later_navigation_item"
             app:destination="@id/watch_later_navigation_item" />
+        <action
+            android:id="@+id/action_home_navigation_item_to_searchingResultFragment"
+            app:destination="@id/searchingResultFragment" />
     </fragment>
 
     <fragment
@@ -41,10 +44,16 @@
             android:id="@+id/action_videoPlayerFragment_to_home_navigation_item"
             app:destination="@id/home_navigation_item" />
     </fragment>
-    <fragment android:id="@+id/placeholder" >
+    <fragment
+        android:id="@+id/searchingResultFragment"
+        android:name="ru.app.yf.ui.video_search.SearchingResultFragment"
+        android:label="SearchingResultFragment" >
         <action
-            android:id="@+id/action_placeholder_to_videoPlayerFragment"
+            android:id="@+id/action_searchingResultFragment_to_videoPlayerFragment"
             app:destination="@id/videoPlayerFragment" />
+        <argument
+            android:name="SearchRequest"
+            app:argType="string" />
     </fragment>
 
 </navigation>
