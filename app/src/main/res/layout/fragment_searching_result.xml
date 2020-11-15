@@ -11,7 +11,7 @@
 
 
     <ru.app.yf.ui.video_search.SearchEditText
-        android:id="@+id/inputTextField"
+        android:id="@+id/searchEditText"
         android:layout_width="0dp"
         android:layout_height="45dp"
         android:layout_marginStart="16dp"

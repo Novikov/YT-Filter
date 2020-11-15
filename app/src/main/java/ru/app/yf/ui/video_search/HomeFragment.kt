@@ -16,6 +16,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -33,6 +35,7 @@ class HomeFragment : Fragment() {
     lateinit var adapter : SearchVideosAdapter
     lateinit var searchRecyclerView: RecyclerView
     lateinit var searchVideosRepository: SearchVideosRepository
+    lateinit var navController: NavController
 
 
     override fun onAttach(context: Context) {
@@ -100,7 +103,10 @@ class HomeFragment : Fragment() {
             if (actionId== EditorInfo.IME_ACTION_SEARCH
             ) {
                 val query = inputTextField.text.toString()
-                searchVideosViewModel.searchRequest(query)
+//                searchVideosViewModel.searchRequest(query)
+                val action = HomeFragmentDirections.actionHomeNavigationItemToSearchingResultFragment(query)
+                navController?.navigate(action)
+
                 true
             }
             else false
@@ -161,6 +167,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activityContract?.showStatusBar()
+        navController = Navigation.findNavController(view)
     }
 
 
