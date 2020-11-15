@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/home_navigation_item"
-        android:name="ru.app.yf.ui.video_search.HomeFragment"
+        android:name="ru.app.yf.ui.home_screen.HomeFragment"
         android:label="@string/home_label"
         tools:layout="@layout/fragment_home">
         <action

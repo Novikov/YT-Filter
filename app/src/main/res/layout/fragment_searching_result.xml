@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".ui.video_search.HomeFragment">
+    tools:context=".ui.home_screen.HomeFragment">
 
 
     <ru.app.yf.ui.video_search.SearchEditText

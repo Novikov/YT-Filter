@@ -77,8 +77,6 @@ class SearchingResultFragment : Fragment() {
         val editText = view.findViewById<SearchEditText>(R.id.searchEditText)
         editText.setText(searchRequest, TextView.BufferType.EDITABLE)
 
-
-
         searchVideosViewModel.searchResultsLiveData.observe(viewLifecycleOwner, Observer {
             updateRecyclerView(it)
             searchEditText.clearFocus()

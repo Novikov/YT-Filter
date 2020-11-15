@@ -10,7 +10,6 @@ import ru.app.yf.data.repository.NetworkState
 class SearchVideosViewModel(private val searchVideosRepository: SearchVideosRepository) : ViewModel() {
 
     private val disposables = CompositeDisposable()
-    val logoViewLiveData = MutableLiveData<Boolean>()
 
     val searchResultsLiveData : MutableLiveData<MutableList<Video>> by lazy {
         searchVideosRepository.getDownloadVideosLiveData()
