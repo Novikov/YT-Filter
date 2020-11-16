@@ -57,13 +57,12 @@ class SearchingResultFragment : Fragment() {
 
         searchVideosViewModel = ViewModelProviders.of(this, object : ViewModelProvider.NewInstanceFactory() {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return SearchVideosViewModel(searchVideosRepository) as T
+                return SearchVideosViewModel(searchVideosRepository,searchRequest) as T
             }
         }).get(SearchVideosViewModel::class.java)
 
         Log.e("NetworkStateOncreate",searchVideosViewModel.networkState.get()?.status.toString())
 
-        searchVideosViewModel.searchRequest(searchRequest)
     }
 
     override fun onCreateView(
@@ -116,8 +115,6 @@ class SearchingResultFragment : Fragment() {
         )
         searchRecyclerView.adapter = adapter
         return view
-
-        return view;
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -130,7 +127,7 @@ class SearchingResultFragment : Fragment() {
             if (actionId== EditorInfo.IME_ACTION_SEARCH
             ) {
                 val query = searchEditText.text.toString()
-                searchVideosViewModel.searchRequest(query)
+                searchVideosViewModel.newSearchRequest(query)
                 true
             }
             else false

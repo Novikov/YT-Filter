@@ -7,24 +7,19 @@ import io.reactivex.disposables.CompositeDisposable
 import ru.app.yf.data.model.Video
 import ru.app.yf.data.repository.NetworkState
 
-class SearchVideosViewModel(private val searchVideosRepository: SearchVideosRepository) : ViewModel() {
+class SearchVideosViewModel(private val searchVideosRepository: SearchVideosRepository,searchRequest:String) : ViewModel() {
 
     private val disposables = CompositeDisposable()
 
     val searchResultsLiveData : MutableLiveData<MutableList<Video>> =
-        searchVideosRepository.getDownloadVideosLiveData(disposables)
-
+        searchVideosRepository.getDownloadVideosLiveData(disposables, searchRequest)
 
     val networkState : ObservableField<NetworkState> by lazy {
         searchVideosRepository.getVideoNetworkState()
     }
 
-//    init {
-//        searchVideosRepository.dataSourceInit(disposables)
-//    }
-
-    fun searchRequest(query:String) {
-        searchVideosRepository.initSearchResult(query)
+    fun newSearchRequest(searchRequest: String){
+        searchVideosRepository.updateDownloadVideosLiveData(searchRequest)
     }
 
     override fun onCleared() {
