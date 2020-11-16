@@ -11,17 +11,17 @@ class SearchVideosViewModel(private val searchVideosRepository: SearchVideosRepo
 
     private val disposables = CompositeDisposable()
 
-    val searchResultsLiveData : MutableLiveData<MutableList<Video>> by lazy {
-        searchVideosRepository.getDownloadVideosLiveData()
-    }
+    val searchResultsLiveData : MutableLiveData<MutableList<Video>> =
+        searchVideosRepository.getDownloadVideosLiveData(disposables)
+
 
     val networkState : ObservableField<NetworkState> by lazy {
         searchVideosRepository.getVideoNetworkState()
     }
 
-    init {
-        searchVideosRepository.dataSourceInit(disposables)
-    }
+//    init {
+//        searchVideosRepository.dataSourceInit(disposables)
+//    }
 
     fun searchRequest(query:String) {
         searchVideosRepository.initSearchResult(query)
