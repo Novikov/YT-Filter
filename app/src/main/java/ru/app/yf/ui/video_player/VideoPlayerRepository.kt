@@ -11,16 +11,13 @@ import ru.app.yf.data.repository.VideoDataSource
 class VideoPlayerRepository (private val youTubeClient: YouTubeService) {
     lateinit var videoDataSource: VideoDataSource
 
-    fun getVideoNetworkState(): ObservableField<NetworkState> {
-        return videoDataSource.networkState
-    }
-
-    fun getPlayingVideo(videoId:String):LiveData<Video>{
+    fun getPlayingVideo(compositeDisposable: CompositeDisposable, videoId:String):LiveData<Video>{
+        videoDataSource = VideoDataSource(youTubeClient,compositeDisposable)
         videoDataSource.getPlayingVideo(videoId)
         return videoDataSource.playingVideoResponse
     }
 
-    fun dataSourceInit(compositeDisposable: CompositeDisposable){
-        videoDataSource = VideoDataSource(youTubeClient,compositeDisposable)
+    fun getVideoNetworkState(): ObservableField<NetworkState> {
+        return videoDataSource.networkState
     }
 }
