@@ -13,19 +13,18 @@ class SearchVideosRepository(private val youTubeClient:YouTubeService) {
 
     lateinit var videoDataSource: VideoDataSource
 
-    fun initSearchResult(query: String) {
-        videoDataSource.fetchVideos(query)
+    fun getDownloadVideosLiveData(compositeDisposable: CompositeDisposable,searchRequest:String): MutableLiveData<MutableList<Video>>{
+        videoDataSource = VideoDataSource(youTubeClient,compositeDisposable)
+        videoDataSource.fetchVideos(searchRequest)
+        return videoDataSource.downloadedVideosListResponse
     }
 
     fun getVideoNetworkState(): ObservableField<NetworkState> {
         return videoDataSource.networkState
     }
 
-    fun getDownloadVideosLiveData(): MutableLiveData<MutableList<Video>>{
-        return videoDataSource.downloadedVideosListResponse
+    fun updateDownloadVideosLiveData(searchRequest:String){
+        videoDataSource.fetchVideos(searchRequest)
     }
 
-    fun dataSourceInit(compositeDisposable: CompositeDisposable){
-        videoDataSource = VideoDataSource(youTubeClient,compositeDisposable)
-    }
 }

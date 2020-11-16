@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.Navigation
 import ru.app.yf.R
-import ru.app.yf.ui.video_search.HomeFragmentDirections
+import ru.app.yf.ui.home_screen.HomeFragmentDirections
 
 
 class MainActivity : AppCompatActivity(), IActivity {

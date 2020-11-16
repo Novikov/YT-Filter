@@ -3,37 +3,38 @@ package ru.app.yf.ui.video_search
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.databinding.Observable
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.fragment_searching_result.*
+import kotlinx.android.synthetic.main.fragment_searching_result.view.*
 import ru.app.yf.R
-import ru.app.yf.data.model.Video
 import ru.app.yf.data.api.YouTubeClient
+import ru.app.yf.data.model.Video
 import ru.app.yf.data.repository.NetworkState
 import ru.app.yf.ui.IActivity
 
-class HomeFragment : Fragment() {
+class SearchingResultFragment : Fragment() {
 
     private var activityContract: IActivity? = null
     lateinit var searchVideosViewModel: SearchVideosViewModel
     lateinit var adapter : SearchVideosAdapter
     lateinit var searchRecyclerView: RecyclerView
     lateinit var searchVideosRepository: SearchVideosRepository
-
+    lateinit var navController: NavController
+    lateinit var searchRequest:String
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -47,12 +48,16 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //Getting search request string from navController
+        val args = SearchingResultFragmentArgs.fromBundle(requireArguments())
+        searchRequest = args.SearchRequest
+
         val apiClient = YouTubeClient.getClient()
         searchVideosRepository = SearchVideosRepository(apiClient)
 
         searchVideosViewModel = ViewModelProviders.of(this, object : ViewModelProvider.NewInstanceFactory() {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return SearchVideosViewModel(searchVideosRepository) as T
+                return SearchVideosViewModel(searchVideosRepository,searchRequest) as T
             }
         }).get(SearchVideosViewModel::class.java)
 
@@ -64,67 +69,21 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_home, container, false)
+        val view =  inflater.inflate(R.layout.fragment_searching_result, container, false)
 
-        val inputTextField = view.inputTextField as SearchEditText
-        inputTextField.clearFocus()
-
-        //input field focus
-        inputTextField.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus && inputTextField.isEnabled && inputTextField.isFocusable) {
-                inputTextField.post(Runnable {
-                    searchVideosViewModel.logoViewLiveData.postValue(false)
-                    val imm =requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.showSoftInput(inputTextField, InputMethodManager.SHOW_IMPLICIT
-                    )
-                })
-            }
-        }
-
-        //back button pressed
-        inputTextField.setOnKeyListener { v, keyCode, event ->
-            Log.e("Key listener event", "Key listener event")
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                Log.e("Back button pressed", "Back button pressed focus cleared")
-                inputTextField.clearFocus()
-                searchVideosViewModel.logoViewLiveData.postValue(true)
-            true
-            }
-            else false
-        }
-
-        //search button pressed
-        inputTextField.setOnEditorActionListener(TextView.OnEditorActionListener(function = { v, actionId, event ->
-            if (actionId== EditorInfo.IME_ACTION_SEARCH
-            ) {
-                val query = inputTextField.text.toString()
-                searchVideosViewModel.searchRequest(query)
-                true
-            }
-            else false
-        }))
-
-
-        searchVideosViewModel.logoViewLiveData.observe(viewLifecycleOwner, Observer{
-            if(it){
-                youtube_logo_image_view.visibility = View.VISIBLE
-                clearRecyclerView()
-            }
-            else {
-                youtube_logo_image_view.visibility = View.GONE
-            }
-        })
+        //Setting search request string to EditText field
+        val editText = view.findViewById<SearchEditText>(R.id.searchEditText)
+        editText.setText(searchRequest, TextView.BufferType.EDITABLE)
 
         searchVideosViewModel.searchResultsLiveData.observe(viewLifecycleOwner, Observer {
-                updateRecyclerView(it)
-                inputTextField.clearFocus()
+            updateRecyclerView(it)
+            searchEditText.clearFocus()
         })
 
         searchVideosViewModel.networkState.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback(){
             override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-                if (searchVideosViewModel.networkState.get()!=NetworkState.WAITING){
+                if (searchVideosViewModel.networkState.get()!= NetworkState.WAITING){
                     when(searchVideosViewModel.networkState.get()){
                         NetworkState.LOADING -> {
                             activityContract?.showProgressBar()
@@ -149,7 +108,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        searchRecyclerView = view.search_results_rv
+        searchRecyclerView = view.search_results_rv1
         searchRecyclerView.layoutManager = LinearLayoutManager(context)
         adapter = SearchVideosAdapter(
             mutableListOf()
@@ -161,6 +120,18 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activityContract?.showStatusBar()
+        navController = Navigation.findNavController(view)
+
+        //search button pressed
+        searchEditText.setOnEditorActionListener(TextView.OnEditorActionListener(function = { v, actionId, event ->
+            if (actionId== EditorInfo.IME_ACTION_SEARCH
+            ) {
+                val query = searchEditText.text.toString()
+                searchVideosViewModel.newSearchRequest(query)
+                true
+            }
+            else false
+        }))
     }
 
 
@@ -185,5 +156,3 @@ class HomeFragment : Fragment() {
     }
 
 }
-
-

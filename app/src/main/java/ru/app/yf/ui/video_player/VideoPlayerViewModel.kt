@@ -14,12 +14,8 @@ class VideoPlayerViewModel(private val videoPlayerRepository:VideoPlayerReposito
     private val disposables = CompositeDisposable()
     val videoTimeLiveData = MutableLiveData<Float>()
 
-    init {
-        videoPlayerRepository.dataSourceInit(disposables)
-    }
-
     val playingVideo: LiveData<Video> by lazy {
-        videoPlayerRepository.getPlayingVideo(videoId)
+        videoPlayerRepository.getPlayingVideo(disposables,videoId)
     }
 
     val networkState : ObservableField<NetworkState> by lazy {

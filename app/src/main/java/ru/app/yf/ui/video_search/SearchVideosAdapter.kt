@@ -30,7 +30,7 @@ class SearchVideosAdapter(val videos:MutableList<Video>) : RecyclerView.Adapter<
         val video = videos[position]
         holder.binding.video = video
         holder.itemView.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeNavigationItemToVideoPlayerFragment(video.videoId)
+            val action = SearchingResultFragmentDirections.actionSearchingResultFragmentToVideoPlayerFragment(video.videoId)
             navController?.navigate(action)
         }
         holder.bind(video)

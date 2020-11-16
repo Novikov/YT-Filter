@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 
 object YouTubeClient {
         private const val YOUTUBE_BASE_URL="https://www.googleapis.com/youtube/v3/"
-        const val API_KEY = "AIzaSyAQb1rMU7vm8NxOAvijTT3rb25Hf1KjjQE"
+        const val API_KEY = "AIzaSyDhVD3YXrCMwkx8CJEPObc7HwsOtDpQGVw"
         const val MAX_RESULT = "5"
         const val URL_SNIPPET = "snippet"
         const val URL_STATISTICS = "statistics"
