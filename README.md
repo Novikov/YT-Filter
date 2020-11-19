@@ -14,8 +14,7 @@
 
 ### In work:
 * Paging;
-* Changing the way to authenticate users from API key to OAuth 2.0 authentication protocol;
-* Adding permissions to allow users to view saved videos and playlists;
+* Bug fixing;
 * Testing;
 
 
