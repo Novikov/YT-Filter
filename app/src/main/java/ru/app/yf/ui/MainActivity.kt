@@ -25,9 +25,6 @@ class MainActivity : AppCompatActivity(), IActivity {
         mProgress = findViewById(R.id.progressBar)
         fragmentManager = supportFragmentManager
 
-        ApiLimitCracker.sharedPreferencesInitialization(this)
-        Log.i("SHX",ApiLimitCracker.isSharedPreferencesInitializedByApiKeys(this).toString())
-
 //        /**ActionBar and BottomNavigationBar are temporary disabled*/
 //         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
 //         val navController = findNavController(R.id.nav_host_fragment)

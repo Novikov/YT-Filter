@@ -16,14 +16,22 @@ import java.util.concurrent.TimeUnit
 
 object YouTubeClient {
         private const val YOUTUBE_BASE_URL="https://www.googleapis.com/youtube/v3/"
-        const val API_KEY = "AIzaSyDhVD3YXrCMwkx8CJEPObc7HwsOtDpQGVw"
+        lateinit var API_KEY:String
         const val MAX_RESULT = "5"
         const val URL_SNIPPET = "snippet"
         const val URL_STATISTICS = "statistics"
         const val URL_CONTENT_DETAILS = "contentDetails"
 
+        init {
+                getApiKey()
+        }
+
+        fun getApiKey(){
+                API_KEY = ApiLimitCracker.getApiKey()
+        }
 
         fun getClient():YouTubeService{
+
                         val logging = HttpLoggingInterceptor()
                         logging.level = HttpLoggingInterceptor.Level.BODY
 
@@ -54,3 +62,6 @@ object YouTubeClient {
                 }
 
 }
+
+
+
