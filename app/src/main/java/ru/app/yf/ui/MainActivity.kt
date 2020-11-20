@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.Navigation
 import ru.app.yf.R
+import ru.app.yf.data.api.ApiLimitCracker
 import ru.app.yf.ui.home_screen.HomeFragmentDirections
 
 
@@ -23,6 +24,9 @@ class MainActivity : AppCompatActivity(), IActivity {
         setContentView(R.layout.activity_main)
         mProgress = findViewById(R.id.progressBar)
         fragmentManager = supportFragmentManager
+
+        ApiLimitCracker.sharedPreferencesInitialization(this)
+        Log.i("SHX",ApiLimitCracker.isSharedPreferencesInitializedByApiKeys(this).toString())
 
 //        /**ActionBar and BottomNavigationBar are temporary disabled*/
 //         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
