@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import ru.app.yf.data.api.ApiLimitCracker
 import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.api.YouTubeService
 import ru.app.yf.data.model.Video
@@ -32,6 +33,8 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
         try {
             compositeDisposable.add(
                 searchRequestWrapper(query)
+                    .doOnError { YouTubeClient.getApiKey() }
+                    .retry(ApiLimitCracker.numbersOfApiKeys)
                 .flatMapIterable {it}
                 .flatMap { video -> videoInfoWrapper(video.videoId)
                     .subscribeOn(Schedulers.io())
@@ -63,6 +66,8 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
         try{
             compositeDisposable.add(
                 videoInfoWrapper(videoId)
+                    .doOnError { YouTubeClient.getApiKey() }
+                    .retry(ApiLimitCracker.numbersOfApiKeys)
                     .subscribeOn(Schedulers.io())
                     .subscribe ({
                         Log.e("playingVideo",it.toString())
