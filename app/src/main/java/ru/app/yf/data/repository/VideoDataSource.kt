@@ -1,5 +1,6 @@
 package ru.app.yf.data.repository
 
+import android.accounts.NetworkErrorException
 import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
@@ -33,8 +34,6 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
         try {
             compositeDisposable.add(
                 searchRequestWrapper(query)
-                    .doOnError { YouTubeClient.getApiKey() }
-                    .retry(ApiLimitCracker.numbersOfApiKeys)
                 .flatMapIterable {it}
                 .flatMap { video -> videoInfoWrapper(video.videoId)
                     .subscribeOn(Schedulers.io())
@@ -66,8 +65,6 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
         try{
             compositeDisposable.add(
                 videoInfoWrapper(videoId)
-                    .doOnError { YouTubeClient.getApiKey() }
-                    .retry(ApiLimitCracker.numbersOfApiKeys)
                     .subscribeOn(Schedulers.io())
                     .subscribe ({
                         Log.e("playingVideo",it.toString())
@@ -92,8 +89,28 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
             YouTubeClient.MAX_RESULT, query,
             YouTubeClient.API_KEY
         ).map {it.items}
+            .doOnError{
+                YouTubeClient.getApiKey()
+            }
+            .retry(ApiLimitCracker.numbersOfAttempts)
+            .onErrorReturn { throw NetworkErrorException("HTTP 403") }
+     }
 
-    }
+     fun videoInfoWrapper(videoId: String): Observable<Video> {
+         return youTubeClient.videoInfo(
+             YouTubeClient.URL_SNIPPET,
+             YouTubeClient.URL_STATISTICS,
+             YouTubeClient.URL_CONTENT_DETAILS, videoId,
+             YouTubeClient.API_KEY
+         ).map { it.item }
+             .doOnError {
+                 YouTubeClient.getApiKey()
+             }
+             .retry(ApiLimitCracker.numbersOfAttempts)
+             .onErrorReturn {
+                 throw NetworkErrorException("HTTP 403")
+             }
+     }
 
     private fun errorHandle(it: Throwable) {
         when{
@@ -105,24 +122,13 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
                 _networkState.set(NetworkState.NO_INTERNET)
                 Log.e("NetworkState", networkState.get()?.status.toString())
             }
-            else -> {_networkState.set(NetworkState.ERROR)
-            Log.e("NetworkState", networkState.get()?.status.toString())}
+            else -> {
+                _networkState.set(NetworkState.ERROR)
+                Log.e("NetworkState", networkState.get()?.status.toString())}
 
         }
         _networkState.set(NetworkState.WAITING)
         Log.e("NetworkState", networkState.get()?.status.toString())
         Log.e("fetchVideos error", it.message)
-    }
-
-     fun videoInfoWrapper(videoId: String): Observable<Video> {
-        return youTubeClient.videoInfo(
-            YouTubeClient.URL_SNIPPET,
-            YouTubeClient.URL_STATISTICS,
-            YouTubeClient.URL_CONTENT_DETAILS, videoId,
-            YouTubeClient.API_KEY
-        ).map {it.item}
-            .doOnError{
-                errorHandle(it)
-            }
     }
 }
