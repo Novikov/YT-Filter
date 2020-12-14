@@ -1,5 +1,6 @@
 package ru.app.yf.data.api
 
+import android.util.Log
 import com.google.gson.GsonBuilder
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
@@ -23,11 +24,12 @@ object YouTubeClient {
         const val URL_CONTENT_DETAILS = "contentDetails"
 
         init {
+                Log.e("APIX","getNextApiKey inner")
                 getApiKey()
         }
 
         fun getApiKey(){
-                API_KEY = ApiLimitCracker.getApiKey()
+                API_KEY = ApiLimitCracker.getNextApiKey()?:throw Exception("The keys are out")
         }
 
         fun getClient():YouTubeService{

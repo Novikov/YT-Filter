@@ -1,28 +1,40 @@
 package ru.app.yf.data.api
 
-import android.app.Activity
-import android.content.Context
 import android.util.Log
-import java.util.*
+import io.reactivex.exceptions.Exceptions
 
 
 object ApiLimitCracker {
-    val TAG = "APIKEY"
+   private val mapOfApiKeys = mutableMapOf(
+       "AIzaSyAQb1rMU7vm8NxOAvijTT3rb25Hf1KjjQE" to true,
+       "AIzaSyDhVD3YXrCMwkx8CJEPObc7HwsOtDpQGVd" to true)
 
-    val collectionOfApiKeys = arrayListOf(
-        "AIzaSyDhVD3YXrCMwkx8CJEPObc7HwsOtDpQGVd",
-        "AIzaSyAQb1rMU7vm8NxOAvijTT3rb25Hf1KjjQE")
-
-    val numbersOfAttempts = collectionOfApiKeys.size.toLong()
-
-    private var currentApiKeyIndex = 0
-
-    fun getApiKey():String {
-       var newApiKey = collectionOfApiKeys.get(currentApiKeyIndex)
-        Log.e(TAG,newApiKey)
-       currentApiKeyIndex++
-       return newApiKey
+    fun getSizeMapOfApiKeys(): Int {
+        return mapOfApiKeys.size
     }
+
+    fun getNextApiKey(): String? {
+        var nextApiKey:String? = null
+        mapOfApiKeys.forEach { (key, value) ->
+            if (value) nextApiKey = key
+        }
+
+        if (nextApiKey!=null){
+            mapOfApiKeys[nextApiKey!!] = false
+        }
+
+        Log.e("APIX", "Key is $nextApiKey")
+        return nextApiKey
+    }
+
+    fun getCountOfAvaliableApiKeys():Int{
+        Log.e("APIX",(mapOfApiKeys.filter { it.value }.count()).toString() + " attemts avaliable")
+        return mapOfApiKeys.filter { it.value }.count()
+    }
+
+
+
+
 }
 
 
