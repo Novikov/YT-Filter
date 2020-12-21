@@ -85,19 +85,22 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
     }
 
      fun searchRequestWrapper(query: String): Observable<MutableList<Video>> {
+         Log.e("APIX", "attempt searchRequestWrapper")
         return youTubeClient.searchRequest(
             YouTubeClient.URL_SNIPPET,
             YouTubeClient.MAX_RESULT, query,
             YouTubeClient.API_KEY
         ).doOnError{
-                Log.e("APIX","doONError searchRequestWrapper")
-                YouTubeClient.getApiKey()
+            Log.e("APIX","doONError searchRequestWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()}"
+                    + "\n changing api key...")
+            YouTubeClient.getApiKey()
             }
             .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
             .map {it.items}
      }
 
      fun videoInfoWrapper(videoId: String): Observable<Video> {
+         Log.e("APIX", "attempt videoInfoWrapper")
          return youTubeClient.videoInfo(
              YouTubeClient.URL_SNIPPET,
              YouTubeClient.URL_STATISTICS,
@@ -105,7 +108,8 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
              YouTubeClient.API_KEY
          )
              .doOnError {
-                 Log.e("APIX","doONError videoInfoWrapper")
+                 Log.e("APIX","doONError videoInfoWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()} "
+                         + "\n changing api key...")
                  YouTubeClient.getApiKey()
              }
              .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
@@ -126,6 +130,10 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
             }
             it.message.toString().contains("Unable to resolve host")->{
                 _networkState.set(NetworkState.NO_INTERNET)
+                Log.e("NetworkState", networkState.get()?.status.toString())
+            }
+            it.message.toString().contains("HTTP 400") -> {
+                _networkState.set(NetworkState.BAD_REQUEST)
                 Log.e("NetworkState", networkState.get()?.status.toString())
             }
             else -> {

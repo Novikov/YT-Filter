@@ -103,6 +103,10 @@ class SearchingResultFragment : Fragment() {
                             activityContract?.hideProgressBar()
                             activityContract?.showErrorDialog(NetworkState.API_LIMIT_EXCEEDED.msg)
                         }
+                        NetworkState.BAD_REQUEST -> {
+                            activityContract?.hideProgressBar()
+                            activityContract?.showErrorDialog(NetworkState.BAD_REQUEST.msg)
+                        }
                     }
                 }
             }

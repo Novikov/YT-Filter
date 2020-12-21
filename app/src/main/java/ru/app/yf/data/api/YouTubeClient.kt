@@ -24,12 +24,12 @@ object YouTubeClient {
         const val URL_CONTENT_DETAILS = "contentDetails"
 
         init {
-                Log.e("APIX","getNextApiKey inner")
                 getApiKey()
         }
 
         fun getApiKey(){
                 API_KEY = ApiLimitCracker.getNextApiKey()?:throw Exception("The keys are out")
+                Log.e("APIX","key is - $API_KEY")
         }
 
         fun getClient():YouTubeService{

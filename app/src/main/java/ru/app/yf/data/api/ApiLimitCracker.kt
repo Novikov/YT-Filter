@@ -22,19 +22,12 @@ object ApiLimitCracker {
         if (nextApiKey!=null){
             mapOfApiKeys[nextApiKey!!] = false
         }
-
-        Log.e("APIX", "Key is $nextApiKey")
         return nextApiKey
     }
 
     fun getCountOfAvaliableApiKeys():Int{
-        Log.e("APIX",(mapOfApiKeys.filter { it.value }.count()).toString() + " attemts avaliable")
         return mapOfApiKeys.filter { it.value }.count()
     }
-
-
-
-
 }
 
 
