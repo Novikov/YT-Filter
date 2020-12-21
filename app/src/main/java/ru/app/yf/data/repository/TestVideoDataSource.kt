@@ -14,7 +14,7 @@ import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.api.YouTubeService
 import ru.app.yf.data.model.Video
 
-class VideoDataSource (private val youTubeClient : YouTubeService, private val compositeDisposable: CompositeDisposable) {
+class TestVideoDataSource (private val youTubeClient : YouTubeService, private val compositeDisposable: CompositeDisposable) {
     private val _networkState  = ObservableField<NetworkState>(NetworkState.WAITING)
     val networkState: ObservableField<NetworkState>
         get() = _networkState                   //with this get, no need to implement get function to get networkSate
