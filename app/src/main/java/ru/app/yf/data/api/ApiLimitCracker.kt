@@ -7,7 +7,9 @@ import io.reactivex.exceptions.Exceptions
 object ApiLimitCracker {
    private val mapOfApiKeys = mutableMapOf(
        "AIzaSyAQb1rMU7vm8NxOAvijTT3rb25Hf1KjjQE" to true,
-       "AIzaSyDhVD3YXrCMwkx8CJEPObc7HwsOtDpQGVd" to true)
+       "AIzaSyDhVD3YXrCMwkx8CJEPObc7HwsOtDpQGVd" to true
+
+   )
 
     fun getSizeMapOfApiKeys(): Int {
         return mapOfApiKeys.size

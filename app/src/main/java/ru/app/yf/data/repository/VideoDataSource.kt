@@ -35,7 +35,6 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
         try {
             compositeDisposable.add(
                 searchRequestWrapper(query)
-                .subscribeOn(Schedulers.io())
                 .flatMapIterable {it}
                 .flatMap { video -> videoInfoWrapper(video.videoId)
                     .subscribeOn(Schedulers.io())
@@ -66,7 +65,6 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
         try{
             compositeDisposable.add(
                 videoInfoWrapper(videoId)
-                    .subscribeOn(Schedulers.io())
                     .subscribe ({
                         Log.e("playingVideo",it.toString())
                         playingVideo.postValue(it)
@@ -85,32 +83,46 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
     }
 
      fun searchRequestWrapper(query: String): Observable<MutableList<Video>> {
-         Log.e("APIX", "attempt searchRequestWrapper")
-        return youTubeClient.searchRequest(
-            YouTubeClient.URL_SNIPPET,
-            YouTubeClient.MAX_RESULT, query,
-            YouTubeClient.API_KEY
-        ).doOnError{
-            Log.e("APIX","doONError searchRequestWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()}"
-                    + "\n changing api key...")
-            YouTubeClient.getApiKey()
+        return Observable.defer {
+            youTubeClient.searchRequest(
+                YouTubeClient.URL_SNIPPET,
+                YouTubeClient.MAX_RESULT, query,
+                YouTubeClient.API_KEY
+            )
+        } .subscribeOn(Schedulers.io())
+            .doOnNext { Log.e("APIX", "attempt searchRequestWrapper") }
+            .doOnError{
+                if(ApiLimitCracker.getCountOfAvaliableApiKeys()>0) {
+                    Log.e(
+                        "APIX",
+                        "doONError searchRequestWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()}"
+                                + "\n changing api key..."
+                    )
+                    YouTubeClient.getApiKey()
+                }
             }
+
             .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
             .map {it.items}
      }
 
      fun videoInfoWrapper(videoId: String): Observable<Video> {
-         Log.e("APIX", "attempt videoInfoWrapper")
-         return youTubeClient.videoInfo(
-             YouTubeClient.URL_SNIPPET,
-             YouTubeClient.URL_STATISTICS,
-             YouTubeClient.URL_CONTENT_DETAILS, videoId,
-             YouTubeClient.API_KEY
-         )
+         return Observable.defer {
+             youTubeClient.videoInfo(
+                 YouTubeClient.URL_SNIPPET,
+                 YouTubeClient.URL_STATISTICS,
+                 YouTubeClient.URL_CONTENT_DETAILS, videoId,
+                 YouTubeClient.API_KEY
+             )
+         }
+             .subscribeOn(Schedulers.io())
+             .doOnNext { Log.e("APIX", "attempt videoInfoWrapper") }
              .doOnError {
-                 Log.e("APIX","doONError videoInfoWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()} "
+                 if(ApiLimitCracker.getCountOfAvaliableApiKeys()>0){
+                     Log.e("APIX","doONError videoInfoWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()} "
                          + "\n changing api key...")
-                 YouTubeClient.getApiKey()
+                     YouTubeClient.getApiKey()
+                 }
              }
              .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
              .map { it.item }
