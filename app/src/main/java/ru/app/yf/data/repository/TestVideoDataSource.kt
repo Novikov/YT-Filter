@@ -14,7 +14,7 @@ import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.api.YouTubeService
 import ru.app.yf.data.model.Video
 
-class VideoDataSource (private val youTubeClient : YouTubeService, private val compositeDisposable: CompositeDisposable) {
+class TestVideoDataSource (private val youTubeClient : YouTubeService, private val compositeDisposable: CompositeDisposable) {
     private val _networkState  = ObservableField<NetworkState>(NetworkState.WAITING)
     val networkState: ObservableField<NetworkState>
         get() = _networkState                   //with this get, no need to implement get function to get networkSate
@@ -83,24 +83,6 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
     }
 
      fun searchRequestWrapper(query: String): Observable<MutableList<Video>> {
-<<<<<<< HEAD
-        return Observable.defer {
-            youTubeClient.searchRequest(
-                YouTubeClient.URL_SNIPPET,
-                YouTubeClient.MAX_RESULT, query,
-                YouTubeClient.API_KEY
-            )
-        } .subscribeOn(Schedulers.io())
-            .doOnNext { Log.e("APIX", "attempt searchRequestWrapper") }
-            .doOnError{
-                if(ApiLimitCracker.getCountOfAvaliableApiKeys()>0) {
-                    Log.e(
-                        "APIX",
-                        "doONError searchRequestWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()}"
-                                + "\n changing api key..."
-                    )
-                    YouTubeClient.getApiKey()
-=======
         return youTubeClient.searchRequest(
             YouTubeClient.URL_SNIPPET,
             YouTubeClient.MAX_RESULT, query,
@@ -116,32 +98,19 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
                             + "\n changing api key..."
                 )
                 YouTubeClient.getApiKey()
->>>>>>> 7060cd4dcc6b4c3e7eb9ffe67da9b62748a02e87
                 }
             }
-
             .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
             .map {it.items}
      }
 
      fun videoInfoWrapper(videoId: String): Observable<Video> {
-<<<<<<< HEAD
-         return Observable.defer {
-             youTubeClient.videoInfo(
-                 YouTubeClient.URL_SNIPPET,
-                 YouTubeClient.URL_STATISTICS,
-                 YouTubeClient.URL_CONTENT_DETAILS, videoId,
-                 YouTubeClient.API_KEY
-             )
-         }
-=======
          return youTubeClient.videoInfo(
              YouTubeClient.URL_SNIPPET,
              YouTubeClient.URL_STATISTICS,
              YouTubeClient.URL_CONTENT_DETAILS, videoId,
              YouTubeClient.API_KEY
          )
->>>>>>> 7060cd4dcc6b4c3e7eb9ffe67da9b62748a02e87
              .subscribeOn(Schedulers.io())
              .doOnNext { Log.e("APIX", "attempt videoInfoWrapper") }
              .doOnError {
