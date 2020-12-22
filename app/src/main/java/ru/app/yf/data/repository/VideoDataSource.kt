@@ -83,7 +83,6 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
     }
 
      fun searchRequestWrapper(query: String): Observable<MutableList<Video>> {
-<<<<<<< HEAD
         return Observable.defer {
             youTubeClient.searchRequest(
                 YouTubeClient.URL_SNIPPET,
@@ -100,23 +99,6 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
                                 + "\n changing api key..."
                     )
                     YouTubeClient.getApiKey()
-=======
-        return youTubeClient.searchRequest(
-            YouTubeClient.URL_SNIPPET,
-            YouTubeClient.MAX_RESULT, query,
-            YouTubeClient.API_KEY
-        )
-            .subscribeOn(Schedulers.io())
-            .doOnNext { Log.e("APIX", "attempt searchRequestWrapper") }
-            .doOnError{
-            if(ApiLimitCracker.getCountOfAvaliableApiKeys()>0) {
-                Log.e(
-                    "APIX",
-                    "doONError searchRequestWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()}"
-                            + "\n changing api key..."
-                )
-                YouTubeClient.getApiKey()
->>>>>>> 7060cd4dcc6b4c3e7eb9ffe67da9b62748a02e87
                 }
             }
 
@@ -125,7 +107,6 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
      }
 
      fun videoInfoWrapper(videoId: String): Observable<Video> {
-<<<<<<< HEAD
          return Observable.defer {
              youTubeClient.videoInfo(
                  YouTubeClient.URL_SNIPPET,
@@ -134,14 +115,6 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
                  YouTubeClient.API_KEY
              )
          }
-=======
-         return youTubeClient.videoInfo(
-             YouTubeClient.URL_SNIPPET,
-             YouTubeClient.URL_STATISTICS,
-             YouTubeClient.URL_CONTENT_DETAILS, videoId,
-             YouTubeClient.API_KEY
-         )
->>>>>>> 7060cd4dcc6b4c3e7eb9ffe67da9b62748a02e87
              .subscribeOn(Schedulers.io())
              .doOnNext { Log.e("APIX", "attempt videoInfoWrapper") }
              .doOnError {
