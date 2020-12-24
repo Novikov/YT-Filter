@@ -1,5 +1,6 @@
 package ru.app.yf.data.api
 
+import android.util.Log
 import com.google.gson.GsonBuilder
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
@@ -16,14 +17,23 @@ import java.util.concurrent.TimeUnit
 
 object YouTubeClient {
         private const val YOUTUBE_BASE_URL="https://www.googleapis.com/youtube/v3/"
-        const val API_KEY = "AIzaSyDhVD3YXrCMwkx8CJEPObc7HwsOtDpQGVw"
-        const val MAX_RESULT = "5"
+        lateinit var API_KEY:String
+        const val MAX_RESULT = "15"
         const val URL_SNIPPET = "snippet"
         const val URL_STATISTICS = "statistics"
         const val URL_CONTENT_DETAILS = "contentDetails"
 
+        init {
+                getApiKey()
+        }
+
+        fun getApiKey(){
+                API_KEY = ApiLimitCracker.getNextApiKey()?:throw Exception("The keys are out")
+                Log.e("APIX","key is - $API_KEY")
+        }
 
         fun getClient():YouTubeService{
+
                         val logging = HttpLoggingInterceptor()
                         logging.level = HttpLoggingInterceptor.Level.BODY
 
@@ -54,3 +64,6 @@ object YouTubeClient {
                 }
 
 }
+
+
+
