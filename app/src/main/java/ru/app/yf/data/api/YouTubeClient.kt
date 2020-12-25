@@ -18,10 +18,14 @@ import java.util.concurrent.TimeUnit
 object YouTubeClient {
         private const val YOUTUBE_BASE_URL="https://www.googleapis.com/youtube/v3/"
         lateinit var API_KEY:String
-        const val MAX_RESULT = "15"
+        var PAGE_TOKEN:String = ""
+        const val MAX_RESULT = "10"
         const val URL_SNIPPET = "snippet"
         const val URL_STATISTICS = "statistics"
         const val URL_CONTENT_DETAILS = "contentDetails"
+
+        const val FIRST_PAGE = 1
+        const val POST_PER_PAGE = 20
 
         init {
                 getApiKey()

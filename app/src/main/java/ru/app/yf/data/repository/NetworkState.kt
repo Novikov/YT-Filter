@@ -17,6 +17,7 @@ class NetworkState(val status: Status, val msg: String) {
         val API_LIMIT_EXCEEDED: NetworkState
         val NO_INTERNET:NetworkState
         val BAD_REQUEST:NetworkState
+        val ENDOFLIST : NetworkState
 
         init {
             WAITING = NetworkState(Status.WAITING,"Waiting user request")
@@ -26,6 +27,7 @@ class NetworkState(val status: Status, val msg: String) {
             API_LIMIT_EXCEEDED = NetworkState(Status.FAILED, "API limit exceeded")
             NO_INTERNET = NetworkState(Status.FAILED,"No internet connection")
             BAD_REQUEST = NetworkState(Status.FAILED, "Incorrect API key")
+            ENDOFLIST = NetworkState(Status.FAILED, "You have reached the end")
         }
     }
 }
