@@ -60,7 +60,7 @@ class SearchRequestResponseDeserializer : JsonDeserializer<VideoListResponse> {
             }
         }
 
-        val videoListResponse =
+        val videoListResponse  =
             VideoListResponse(
                 videoList,totalPages,totalResults
             )
