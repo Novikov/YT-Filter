@@ -34,7 +34,7 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
         try {
             compositeDisposable.add(
                 searchRequestWrapper(query)
-                .flatMapIterable {it}
+                .flatMapIterable { it}
                 .flatMap { video -> videoInfoWrapper(video.videoId)
                     .subscribeOn(Schedulers.io())
                 }

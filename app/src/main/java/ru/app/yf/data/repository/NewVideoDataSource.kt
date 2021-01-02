@@ -7,11 +7,13 @@ import androidx.paging.PageKeyedDataSource
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.exceptions.CompositeException
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.app.yf.data.api.ApiLimitCracker
 import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.api.YouTubeClient.FIRST_PAGE_TOKEN
 import ru.app.yf.data.api.YouTubeService
+import ru.app.yf.data.api.json.VideoListResponse
 import ru.app.yf.data.model.Video
 
 class NewVideoDataSource(private val youTubeClient : YouTubeService, private val compositeDisposable: CompositeDisposable) :
@@ -29,13 +31,9 @@ class NewVideoDataSource(private val youTubeClient : YouTubeService, private val
 
         compositeDisposable.add(
             searchRequestWrapper(page,query)
-                .flatMapIterable {it}
-                .flatMap { video -> videoInfoWrapper(video.videoId)
-                    .subscribeOn(Schedulers.io())
-                }
-                .toList()
+                .doOnNext{ it.videoInitialization() }
                 .subscribe({
-                    callback.onResult(it,null,YouTubeClient.NEXT_PAGE_TOKEN)
+                    callback.onResult(it.items,null,YouTubeClient.NEXT_PAGE_TOKEN)
                     networkState.set(NetworkState.LOADED)
                 },{
                     networkState.set(NetworkState.ERROR)
@@ -50,13 +48,9 @@ class NewVideoDataSource(private val youTubeClient : YouTubeService, private val
 
         compositeDisposable.add(
             searchRequestWrapper(page,query)
-                .flatMapIterable {it}
-                .flatMap { video -> videoInfoWrapper(video.videoId)
-                    .subscribeOn(Schedulers.io())
-                }
-                .toList()
+                .doOnNext{ it.videoInitialization() }
                 .subscribe({
-//                    if (it)
+
                 },{
                     networkState.set(NetworkState.ERROR)
                     Log.e("fetchVideos error", it.message )
@@ -68,7 +62,26 @@ class NewVideoDataSource(private val youTubeClient : YouTubeService, private val
 
     }
 
-    fun searchRequestWrapper(query: String, page: String): Observable<MutableList<Video>> {
+    fun VideoListResponse.videoInitialization(){
+        compositeDisposable.add(Observable.fromIterable(items)
+            .flatMap { videoInfoWrapper(it.videoId) }
+            .subscribeOn(Schedulers.io())
+            .toList()
+            .doOnError{
+                if(ApiLimitCracker.getCountOfAvaliableApiKeys()>0) {
+                    Log.e(
+                        "APIX",
+                        "doONError searchRequestWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()}"
+                                + "\n changing api key..."
+                    )
+                    YouTubeClient.getApiKey()
+                }
+            }
+            .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
+            .subscribe({ items = it},{errorHandle(it)}))
+    }
+
+    fun searchRequestWrapper(query: String, page: String): Observable<VideoListResponse> {
         return Observable.defer {
             youTubeClient.searchRequest(
                 YouTubeClient.URL_SNIPPET,
@@ -91,7 +104,6 @@ class NewVideoDataSource(private val youTubeClient : YouTubeService, private val
             }
 
             .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
-            .map {it.items}
     }
 
     fun videoInfoWrapper(videoId: String): Observable<Video> {
