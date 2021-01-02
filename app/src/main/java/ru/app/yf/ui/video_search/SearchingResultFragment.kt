@@ -131,6 +131,7 @@ class SearchingResultFragment : Fragment() {
             if (actionId== EditorInfo.IME_ACTION_SEARCH
             ) {
                 val query = searchEditText.text.toString()
+                YouTubeClient.QUERY = query
                 searchVideosViewModel.newSearchRequest(query)
                 true
             }

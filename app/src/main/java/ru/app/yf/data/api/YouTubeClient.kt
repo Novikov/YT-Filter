@@ -27,6 +27,8 @@ object YouTubeClient {
         var PREVIOUS_PAGE_TOKEN = FIRST_PAGE_TOKEN
         lateinit var NEXT_PAGE_TOKEN:String
 
+        lateinit var QUERY:String
+
         init {
                 getApiKey()
         }

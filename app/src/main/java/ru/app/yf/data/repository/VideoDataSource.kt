@@ -104,7 +104,7 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
             }
 
             .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
-            .map {it.items}
+            .map { it.items}
      }
 
      fun videoInfoWrapper(videoId: String): Observable<Video> {
