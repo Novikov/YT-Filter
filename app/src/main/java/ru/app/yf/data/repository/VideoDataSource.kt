@@ -85,7 +85,9 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
         return Observable.defer {
             youTubeClient.searchRequest(
                 YouTubeClient.URL_SNIPPET,
-                YouTubeClient.VIDEOS_PER_PAGE, query,
+                YouTubeClient.VIDEOS_PER_PAGE,
+                YouTubeClient.FIRST_PAGE_TOKEN,
+                query,
                 YouTubeClient.API_KEY
             )
         } .subscribeOn(Schedulers.io())

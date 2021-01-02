@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 interface YouTubeService {
     @GET("search")
-    fun searchRequest(@Query("part")snippet:String, @Query("maxResults")maxResults:String, @Query("q") q: String, @Query("key")apiKey:String): Observable<VideoListResponse>
+    fun searchRequest(@Query("part")snippet:String, @Query("maxResults")maxResults:String, @Query("pageToken")pageToken:String, @Query("q") q: String, @Query("key")apiKey:String): Observable<VideoListResponse>
 
     @GET("videos")
     fun videoInfo(@Query("part")snippet:String,@Query("part")statistics:String, @Query("part")contentDetails:String, @Query("id")id:String, @Query("key")apiKey:String): Observable<VideoItemResponse>
