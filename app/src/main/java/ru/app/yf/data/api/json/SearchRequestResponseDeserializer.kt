@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.model.Video
 import java.lang.reflect.Type
 
@@ -20,6 +21,10 @@ class SearchRequestResponseDeserializer : JsonDeserializer<VideoListResponse> {
 
         //getting page info
         json?.asJsonObject?.entrySet()?.forEach {
+            if (it.key.equals("nextPageToken")){
+                YouTubeClient.NEXT_PAGE_TOKEN = it.value.asString
+            }
+
             if (it.key.equals("pageInfo")){
                 var tmpPageInfo = it.value.asJsonObject
 
@@ -65,7 +70,7 @@ class SearchRequestResponseDeserializer : JsonDeserializer<VideoListResponse> {
                 videoList,totalPages,totalResults
             )
 
-        Log.e("Serialization", "Total pages : $totalPages, total results : $totalResults, videolist: ${videoList}")
+        Log.e("Serialization", "Total pages : $totalPages, total results : $totalResults,next page token - ${YouTubeClient.NEXT_PAGE_TOKEN} videolist: ${videoList}")
 
         return videoListResponse
     }

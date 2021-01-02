@@ -1,6 +1,5 @@
 package ru.app.yf.data.repository
 
-import android.accounts.NetworkErrorException
 import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
@@ -86,7 +85,7 @@ class VideoDataSource (private val youTubeClient : YouTubeService, private val c
         return Observable.defer {
             youTubeClient.searchRequest(
                 YouTubeClient.URL_SNIPPET,
-                YouTubeClient.MAX_RESULT, query,
+                YouTubeClient.VIDEOS_PER_PAGE, query,
                 YouTubeClient.API_KEY
             )
         } .subscribeOn(Schedulers.io())
