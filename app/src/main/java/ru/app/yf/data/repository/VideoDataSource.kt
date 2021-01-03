@@ -89,13 +89,36 @@ class VideoDataSource(
         }
     }
 
+    fun SearchRequestResponse.videosContentInit(youTubeClient: YouTubeService,
+                                                callback: () -> Unit)
+    {
+        compositeDisposable.add(Observable.fromIterable(this.items)
+            .flatMap {videoInfoWrapper(it.videoId) }
+            .toList()
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+
+                this.items = it
+                Log.e("new videosId",this.items.toString())
+                search.postValue(this)
+//                    downloadedVideosList.postValue(searchRequestResponse.items)
+                _networkState.set(NetworkState.LOADED)
+                Log.e("NetworkState", networkState.get()?.status.toString())
+                _networkState.set(NetworkState.WAITING)
+                Log.e("NetworkState", networkState.get()?.status.toString())
+            }, {
+                errorHandle(it)
+            }))
+    }
+
 
     fun videoInfoWrapper(videoId: String): Observable<Video> {
         return Observable.defer {
             youTubeClient.videoInfo(
                 YouTubeClient.URL_SNIPPET,
                 YouTubeClient.URL_STATISTICS,
-                YouTubeClient.URL_CONTENT_DETAILS, videoId,
+                YouTubeClient.URL_CONTENT_DETAILS,
+                videoId,
                 YouTubeClient.API_KEY
             )
         }
