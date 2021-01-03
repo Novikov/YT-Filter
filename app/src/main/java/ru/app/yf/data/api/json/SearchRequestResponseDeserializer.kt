@@ -18,11 +18,12 @@ class SearchRequestResponseDeserializer : JsonDeserializer<SearchRequestResponse
         var videoList = mutableListOf<Video>()
         var totalPages:Int = 0
         var totalResults:Int = 0
+        var nextPageToken:String = ""
 
         //getting page info
         json?.asJsonObject?.entrySet()?.forEach {
             if (it.key.equals("nextPageToken")){
-                YouTubeClient.NEXT_PAGE_TOKEN = it.value.asString
+                nextPageToken = it.value.asString
             }
 
             if (it.key.equals("pageInfo")){
@@ -66,9 +67,7 @@ class SearchRequestResponseDeserializer : JsonDeserializer<SearchRequestResponse
         }
 
         val videoListResponse  =
-            SearchRequestResponse(
-                videoList,totalPages,totalResults
-            )
+            SearchRequestResponse(videoList,totalPages,totalResults,nextPageToken)
 
         Log.e("Serialization", "Total pages : $totalPages, total results : $totalResults,next page token - ${YouTubeClient.NEXT_PAGE_TOKEN} videolist: ${videoList}")
 
