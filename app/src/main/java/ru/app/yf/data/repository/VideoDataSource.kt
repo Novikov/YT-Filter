@@ -11,7 +11,7 @@ import io.reactivex.schedulers.Schedulers
 import ru.app.yf.data.api.ApiLimitCracker
 import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.api.YouTubeService
-import ru.app.yf.data.api.json.SearchRequestResponse
+import ru.app.yf.data.model.SearchRequestResponse
 import ru.app.yf.data.model.Video
 
 class VideoDataSource(

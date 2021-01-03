@@ -4,7 +4,7 @@ import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
 import ru.app.yf.data.api.json.VideoDetailResponse
-import ru.app.yf.data.api.json.SearchRequestResponse
+import ru.app.yf.data.model.SearchRequestResponse
 
 
 interface YouTubeService {

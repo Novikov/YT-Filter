@@ -1,12 +1,10 @@
 package ru.app.yf.ui.video_search
 
 import androidx.databinding.ObservableField
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.app.yf.data.api.YouTubeService
-import ru.app.yf.data.api.json.SearchRequestResponse
-import ru.app.yf.data.model.Video
+import ru.app.yf.data.model.SearchRequestResponse
 import ru.app.yf.data.repository.NetworkState
 import ru.app.yf.data.repository.VideoDataSource
 

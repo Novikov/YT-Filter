@@ -1,4 +1,4 @@
-package ru.app.yf.data.api.json
+package ru.app.yf.data.model
 
 import io.reactivex.Observable
 import ru.app.yf.data.model.Video
