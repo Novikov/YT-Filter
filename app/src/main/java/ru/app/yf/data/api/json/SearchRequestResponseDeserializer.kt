@@ -8,12 +8,12 @@ import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.model.Video
 import java.lang.reflect.Type
 
-class SearchRequestResponseDeserializer : JsonDeserializer<VideoListResponse> {
+class SearchRequestResponseDeserializer : JsonDeserializer<SearchRequestResponse> {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
         context: JsonDeserializationContext?
-    ): VideoListResponse {
+    ): SearchRequestResponse {
 
         var videoList = mutableListOf<Video>()
         var totalPages:Int = 0
@@ -66,7 +66,7 @@ class SearchRequestResponseDeserializer : JsonDeserializer<VideoListResponse> {
         }
 
         val videoListResponse  =
-            VideoListResponse(
+            SearchRequestResponse(
                 videoList,totalPages,totalResults
             )
 

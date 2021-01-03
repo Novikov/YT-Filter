@@ -2,17 +2,15 @@ package ru.app.yf.data.api
 
 import android.util.Log
 import com.google.gson.GsonBuilder
-import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.app.yf.data.api.json.SearchRequestResponseDeserializer
-import ru.app.yf.data.api.json.VideoInfoResponseDeserializer
-import ru.app.yf.data.api.json.VideoItemResponse
-import ru.app.yf.data.api.json.VideoListResponse
-import ru.app.yf.data.model.Video
+import ru.app.yf.data.api.json.VideoDetailResponseDeserializer
+import ru.app.yf.data.api.json.VideoDetailResponse
+import ru.app.yf.data.api.json.SearchRequestResponse
 import java.util.concurrent.TimeUnit
 
 object YouTubeClient {
@@ -50,12 +48,12 @@ object YouTubeClient {
 
                         val gson = GsonBuilder()
                                 .registerTypeAdapter(
-                                        VideoListResponse::class.java,
+                                        SearchRequestResponse::class.java,
                                         SearchRequestResponseDeserializer()
                                 )
                                 .registerTypeAdapter(
-                                        VideoItemResponse::class.java,
-                                        VideoInfoResponseDeserializer()
+                                        VideoDetailResponse::class.java,
+                                        VideoDetailResponseDeserializer()
                                 )
                                 .create()
 

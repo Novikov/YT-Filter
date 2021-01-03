@@ -7,12 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.exceptions.CompositeException
-import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.app.yf.data.api.ApiLimitCracker
 import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.api.YouTubeService
-import ru.app.yf.data.api.json.VideoListResponse
+import ru.app.yf.data.api.json.SearchRequestResponse
 import ru.app.yf.data.model.Video
 
 class VideoDataSource(
@@ -26,6 +25,10 @@ class VideoDataSource(
     private val downloadedVideosList = MutableLiveData<MutableList<Video>>()
     val downloadedVideosListResponse: MutableLiveData<MutableList<Video>>
         get() = downloadedVideosList
+
+    private val search = MutableLiveData<SearchRequestResponse>()
+    val searchResponse: MutableLiveData<SearchRequestResponse>
+    get() = search
 
     private val playingVideo = MutableLiveData<Video>()
     val playingVideoResponse: LiveData<Video>
@@ -65,17 +68,18 @@ class VideoDataSource(
         }
     }
 
-    fun videoInit(videoListResponse: VideoListResponse) {
+    fun videoInit(searchRequestResponse: SearchRequestResponse) {
         try {
         compositeDisposable.add(
-            Observable.fromIterable(videoListResponse.items)
+            Observable.fromIterable(searchRequestResponse.items)
                 .flatMap { videoInfoWrapper(it.videoId) }
                 .toList()
                 .subscribeOn(Schedulers.io())
                 .subscribe({
-                    videoListResponse.items = it
-                    Log.e("new videosId",videoListResponse.items.toString())
-                    downloadedVideosList.postValue(videoListResponse.items)
+                    searchRequestResponse.items = it
+                    Log.e("new videosId",searchRequestResponse.items.toString())
+                    search.postValue(searchRequestResponse)
+//                    downloadedVideosList.postValue(searchRequestResponse.items)
                     _networkState.set(NetworkState.LOADED)
                     Log.e("NetworkState", networkState.get()?.status.toString())
                     _networkState.set(NetworkState.WAITING)

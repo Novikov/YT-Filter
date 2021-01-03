@@ -2,18 +2,16 @@ package ru.app.yf.data.repository
 
 import android.util.Log
 import androidx.databinding.ObservableField
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.exceptions.CompositeException
-import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import ru.app.yf.data.api.ApiLimitCracker
 import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.api.YouTubeClient.FIRST_PAGE_TOKEN
 import ru.app.yf.data.api.YouTubeService
-import ru.app.yf.data.api.json.VideoListResponse
+import ru.app.yf.data.api.json.SearchRequestResponse
 import ru.app.yf.data.model.Video
 
 class NewVideoDataSource(private val youTubeClient : YouTubeService, private val compositeDisposable: CompositeDisposable) :
@@ -62,7 +60,7 @@ class NewVideoDataSource(private val youTubeClient : YouTubeService, private val
 
     }
 
-    fun VideoListResponse.videoInitialization(){
+    fun SearchRequestResponse.videoInitialization(){
         compositeDisposable.add(Observable.fromIterable(items)
             .flatMap { videoInfoWrapper(it.videoId) }
             .subscribeOn(Schedulers.io())
@@ -81,7 +79,7 @@ class NewVideoDataSource(private val youTubeClient : YouTubeService, private val
             .subscribe({ items = it},{errorHandle(it)}))
     }
 
-    fun searchRequestWrapper(query: String, page: String): Observable<VideoListResponse> {
+    fun searchRequestWrapper(query: String, page: String): Observable<SearchRequestResponse> {
         return Observable.defer {
             youTubeClient.searchRequest(
                 YouTubeClient.URL_SNIPPET,

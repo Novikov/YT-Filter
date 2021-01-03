@@ -8,14 +8,14 @@ import ru.app.yf.data.model.Video
 import java.lang.reflect.Type
 
 
-class VideoInfoResponseDeserializer : JsonDeserializer<VideoItemResponse> {
+class VideoDetailResponseDeserializer : JsonDeserializer<VideoDetailResponse> {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
         context: JsonDeserializationContext?
-    ): VideoItemResponse {
+    ): VideoDetailResponse {
         val video = Video("")
-        val videoResponse = VideoItemResponse(video)
+        val videoResponse = VideoDetailResponse(video)
 
         json?.asJsonObject?.entrySet()?.forEach {
             if (it.key.equals("items")) {
