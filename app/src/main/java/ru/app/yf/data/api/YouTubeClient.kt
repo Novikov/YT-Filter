@@ -2,26 +2,30 @@ package ru.app.yf.data.api
 
 import android.util.Log
 import com.google.gson.GsonBuilder
-import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.app.yf.data.api.json.SearchRequestResponseDeserializer
-import ru.app.yf.data.api.json.VideoInfoResponseDeserializer
-import ru.app.yf.data.api.json.VideoItemResponse
-import ru.app.yf.data.api.json.VideoListResponse
-import ru.app.yf.data.model.Video
+import ru.app.yf.data.api.json.VideoDetailResponseDeserializer
+import ru.app.yf.data.api.json.VideoDetailResponse
+import ru.app.yf.data.model.SearchRequestResponse
 import java.util.concurrent.TimeUnit
 
 object YouTubeClient {
         private const val YOUTUBE_BASE_URL="https://www.googleapis.com/youtube/v3/"
         lateinit var API_KEY:String
-        const val MAX_RESULT = "15"
+        const val VIDEOS_PER_PAGE = "10"
         const val URL_SNIPPET = "snippet"
         const val URL_STATISTICS = "statistics"
         const val URL_CONTENT_DETAILS = "contentDetails"
+
+        const val FIRST_PAGE_TOKEN = ""
+        var PREVIOUS_PAGE_TOKEN = FIRST_PAGE_TOKEN
+        lateinit var NEXT_PAGE_TOKEN:String
+
+        lateinit var QUERY:String
 
         init {
                 getApiKey()
@@ -44,12 +48,12 @@ object YouTubeClient {
 
                         val gson = GsonBuilder()
                                 .registerTypeAdapter(
-                                        VideoListResponse::class.java,
+                                        SearchRequestResponse::class.java,
                                         SearchRequestResponseDeserializer()
                                 )
                                 .registerTypeAdapter(
-                                        VideoItemResponse::class.java,
-                                        VideoInfoResponseDeserializer()
+                                        VideoDetailResponse::class.java,
+                                        VideoDetailResponseDeserializer()
                                 )
                                 .create()
 

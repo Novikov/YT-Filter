@@ -2,36 +2,29 @@ package ru.app.yf.data.repository
 
 import android.util.Log
 import androidx.databinding.ObservableField
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.paging.PageKeyedDataSource
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.exceptions.CompositeException
 import io.reactivex.schedulers.Schedulers
 import ru.app.yf.data.api.ApiLimitCracker
 import ru.app.yf.data.api.YouTubeClient
+import ru.app.yf.data.api.YouTubeClient.FIRST_PAGE_TOKEN
 import ru.app.yf.data.api.YouTubeService
 import ru.app.yf.data.model.SearchRequestResponse
 import ru.app.yf.data.model.Video
 
-class VideoDataSource(
-    private val youTubeClient: YouTubeService,
-    private val compositeDisposable: CompositeDisposable
-) {
-    private val _networkState = ObservableField<NetworkState>(NetworkState.WAITING)
+class NewVideoDataSource(private val youTubeClient : YouTubeService, private val compositeDisposable: CompositeDisposable) :
+    PageKeyedDataSource<String, Video>() {
+
+   private var pageToken = FIRST_PAGE_TOKEN
+   private var query = YouTubeClient.QUERY
+
+    private val _networkState  = ObservableField<NetworkState>(NetworkState.WAITING)
     val networkState: ObservableField<NetworkState>
-        get() = _networkState                   //with this get, no need to implement get function to get networkSate
+        get() = _networkState
 
-    private val search = MutableLiveData<SearchRequestResponse>()
-    val searchResponse: MutableLiveData<SearchRequestResponse>
-    get() = search
-
-    private val playingVideo = MutableLiveData<Video>()
-    val playingVideoResponse: LiveData<Video>
-        get() = playingVideo
-
-
-    fun fetchVideos(query: String) {
+    override fun loadInitial(params: LoadInitialParams<String>, callback: LoadInitialCallback<String, Video>) {
         _networkState.set(NetworkState.LOADING)
         Log.e("NetworkState", networkState.get()?.status.toString())
 
@@ -40,7 +33,7 @@ class VideoDataSource(
                 youTubeClient.searchRequest(
                     YouTubeClient.URL_SNIPPET,
                     YouTubeClient.VIDEOS_PER_PAGE,
-                    YouTubeClient.FIRST_PAGE_TOKEN,
+                    pageToken,
                     query,
                     YouTubeClient.API_KEY
                 )
@@ -58,67 +51,50 @@ class VideoDataSource(
                 }
 
                 .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
-                .subscribe ({ videoInit(it)},{errorHandle(it)}))
+                .subscribe (
+                    {
+
+                    },{errorHandle(it)}))
         } catch (e: Exception) {
             Log.e("fetchVideos", e.message)
         }
     }
+
+    override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<String, Video>) {
+
+    }
+
 
     fun videoInit(searchRequestResponse: SearchRequestResponse) {
         try {
-        compositeDisposable.add(
-            Observable.fromIterable(searchRequestResponse.items)
-                .flatMap { videoInfoWrapper(it.videoId) }
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    searchRequestResponse.items = it
-                    Log.e("new videosId",searchRequestResponse.items.toString())
-                    search.postValue(searchRequestResponse)
-//                    downloadedVideosList.postValue(searchRequestResponse.items)
-                    _networkState.set(NetworkState.LOADED)
-                    Log.e("NetworkState", networkState.get()?.status.toString())
-                    _networkState.set(NetworkState.WAITING)
-                    Log.e("NetworkState", networkState.get()?.status.toString())
-                }, {
-                    errorHandle(it)
-                })
-        )
+            compositeDisposable.add(
+                Observable.fromIterable(searchRequestResponse.items)
+                    .flatMap { videoInfoWrapper(it.videoId) }
+                    .toList()
+                    .subscribeOn(Schedulers.io())
+                    .subscribe({
+                        searchRequestResponse.items = it
+                        Log.e("new videosId",searchRequestResponse.items.toString())
+//                        search.postValue(searchRequestResponse)
+                        _networkState.set(NetworkState.LOADED)
+                        Log.e("NetworkState", networkState.get()?.status.toString())
+                        _networkState.set(NetworkState.WAITING)
+                        Log.e("NetworkState", networkState.get()?.status.toString())
+                    }, {
+                        errorHandle(it)
+                    })
+            )
         } catch (e: Exception) {
             Log.e("fetchVideos", e.message)
         }
     }
-
-    fun SearchRequestResponse.videosContentInit(youTubeClient: YouTubeService,
-                                                callback: () -> Unit)
-    {
-        compositeDisposable.add(Observable.fromIterable(this.items)
-            .flatMap {videoInfoWrapper(it.videoId) }
-            .toList()
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-
-                this.items = it
-                Log.e("new videosId",this.items.toString())
-                search.postValue(this)
-//                    downloadedVideosList.postValue(searchRequestResponse.items)
-                _networkState.set(NetworkState.LOADED)
-                Log.e("NetworkState", networkState.get()?.status.toString())
-                _networkState.set(NetworkState.WAITING)
-                Log.e("NetworkState", networkState.get()?.status.toString())
-            }, {
-                errorHandle(it)
-            }))
-    }
-
 
     fun videoInfoWrapper(videoId: String): Observable<Video> {
         return Observable.defer {
             youTubeClient.videoInfo(
                 YouTubeClient.URL_SNIPPET,
                 YouTubeClient.URL_STATISTICS,
-                YouTubeClient.URL_CONTENT_DETAILS,
-                videoId,
+                YouTubeClient.URL_CONTENT_DETAILS, videoId,
                 YouTubeClient.API_KEY
             )
         }
@@ -137,30 +113,6 @@ class VideoDataSource(
             .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
             .map { it.item }
     }
-
-    fun getPlayingVideo(videoId: String) {
-        _networkState.set(NetworkState.LOADING)
-        Log.e("NetworkState", networkState.get()?.status.toString())
-
-        try {
-            compositeDisposable.add(
-                videoInfoWrapper(videoId)
-                    .subscribe({
-                        Log.e("playingVideo", it.toString())
-                        playingVideo.postValue(it)
-                        _networkState.set(NetworkState.LOADED)
-                        Log.e("NetworkState", networkState.get()?.status.toString())
-                        _networkState.set(NetworkState.WAITING)
-                        Log.e("NetworkState", networkState.get()?.status.toString())
-                    }, {
-                        errorHandle(it)
-                    })
-            )
-        } catch (e: Exception) {
-            Log.e("fetchVideos", e.message)
-        }
-    }
-
 
     private fun errorHandle(it: Throwable) {
         if (it is CompositeException) {
@@ -194,4 +146,11 @@ class VideoDataSource(
         it.printStackTrace()
 
     }
+
+    override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<String, Video>) {
+
+    }
+
+
+
 }
