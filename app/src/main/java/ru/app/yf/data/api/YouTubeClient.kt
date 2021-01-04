@@ -22,8 +22,6 @@ object YouTubeClient {
         const val URL_CONTENT_DETAILS = "contentDetails"
 
         const val FIRST_PAGE_TOKEN = ""
-        var PREVIOUS_PAGE_TOKEN = FIRST_PAGE_TOKEN
-        lateinit var NEXT_PAGE_TOKEN:String
 
         lateinit var QUERY:String
 
