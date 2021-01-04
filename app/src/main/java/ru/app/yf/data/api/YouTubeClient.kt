@@ -1,29 +1,41 @@
 package ru.app.yf.data.api
 
+import android.util.Log
 import com.google.gson.GsonBuilder
-import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.app.yf.data.api.json.SearchRequestResponseDeserializer
-import ru.app.yf.data.api.json.VideoInfoResponseDeserializer
-import ru.app.yf.data.api.json.VideoItemResponse
-import ru.app.yf.data.api.json.VideoListResponse
-import ru.app.yf.data.model.Video
+import ru.app.yf.data.api.json.VideoDetailResponseDeserializer
+import ru.app.yf.data.api.json.VideoDetailResponse
+import ru.app.yf.data.api.json.SearchRequestResponse
 import java.util.concurrent.TimeUnit
 
 object YouTubeClient {
         private const val YOUTUBE_BASE_URL="https://www.googleapis.com/youtube/v3/"
-        const val API_KEY = "AIzaSyDhVD3YXrCMwkx8CJEPObc7HwsOtDpQGVw"
-        const val MAX_RESULT = "5"
+        lateinit var API_KEY:String
+        const val VIDEOS_PER_PAGE = "30"
         const val URL_SNIPPET = "snippet"
         const val URL_STATISTICS = "statistics"
         const val URL_CONTENT_DETAILS = "contentDetails"
 
+        const val FIRST_PAGE_TOKEN = ""
+
+        lateinit var QUERY:String
+
+        init {
+                getApiKey()
+        }
+
+        fun getApiKey(){
+                API_KEY = ApiLimitCracker.getNextApiKey()?:throw Exception("The keys are out")
+                Log.e("APIX","key is - $API_KEY")
+        }
 
         fun getClient():YouTubeService{
+
                         val logging = HttpLoggingInterceptor()
                         logging.level = HttpLoggingInterceptor.Level.BODY
 
@@ -34,12 +46,12 @@ object YouTubeClient {
 
                         val gson = GsonBuilder()
                                 .registerTypeAdapter(
-                                        VideoListResponse::class.java,
+                                        SearchRequestResponse::class.java,
                                         SearchRequestResponseDeserializer()
                                 )
                                 .registerTypeAdapter(
-                                        VideoItemResponse::class.java,
-                                        VideoInfoResponseDeserializer()
+                                        VideoDetailResponse::class.java,
+                                        VideoDetailResponseDeserializer()
                                 )
                                 .create()
 
@@ -54,3 +66,6 @@ object YouTubeClient {
                 }
 
 }
+
+
+

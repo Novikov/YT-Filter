@@ -13,7 +13,7 @@
 * Picasso for uploading video thumbnails;
 
 ### In work:
-* Paging;
+* Dagger connection;
 * Bug fixing;
 * Testing;
 

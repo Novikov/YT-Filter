@@ -13,7 +13,7 @@ class VideoPlayerRepository (private val youTubeClient: YouTubeService) {
 
     fun getPlayingVideo(compositeDisposable: CompositeDisposable, videoId:String):LiveData<Video>{
         videoDataSource = VideoDataSource(youTubeClient,compositeDisposable)
-        videoDataSource.getPlayingVideo(videoId)
+        videoDataSource.videoPlayerContentInit(videoId)
         return videoDataSource.playingVideoResponse
     }
 

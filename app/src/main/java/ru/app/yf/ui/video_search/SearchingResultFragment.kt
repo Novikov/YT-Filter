@@ -76,8 +76,8 @@ class SearchingResultFragment : Fragment() {
         val editText = view.findViewById<SearchEditText>(R.id.searchEditText)
         editText.setText(searchRequest, TextView.BufferType.EDITABLE)
 
-        searchVideosViewModel.searchResultsLiveData.observe(viewLifecycleOwner, Observer {
-            updateRecyclerView(it)
+        searchVideosViewModel.searchRequest.observe(viewLifecycleOwner, Observer {
+            updateRecyclerView(it.items)
             searchEditText.clearFocus()
         })
 
@@ -103,6 +103,10 @@ class SearchingResultFragment : Fragment() {
                             activityContract?.hideProgressBar()
                             activityContract?.showErrorDialog(NetworkState.API_LIMIT_EXCEEDED.msg)
                         }
+                        NetworkState.BAD_REQUEST -> {
+                            activityContract?.hideProgressBar()
+                            activityContract?.showErrorDialog(NetworkState.BAD_REQUEST.msg)
+                        }
                     }
                 }
             }
@@ -127,6 +131,7 @@ class SearchingResultFragment : Fragment() {
             if (actionId== EditorInfo.IME_ACTION_SEARCH
             ) {
                 val query = searchEditText.text.toString()
+                YouTubeClient.QUERY = query
                 searchVideosViewModel.newSearchRequest(query)
                 true
             }
