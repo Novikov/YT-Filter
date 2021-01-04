@@ -1,11 +1,8 @@
 package ru.app.yf.data.api.json
 
-import android.util.Log
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
-import ru.app.yf.data.api.YouTubeClient
-import ru.app.yf.data.model.SearchRequestResponse
 import ru.app.yf.data.model.Video
 import java.lang.reflect.Type
 

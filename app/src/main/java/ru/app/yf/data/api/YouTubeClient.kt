@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.app.yf.data.api.json.SearchRequestResponseDeserializer
 import ru.app.yf.data.api.json.VideoDetailResponseDeserializer
 import ru.app.yf.data.api.json.VideoDetailResponse
-import ru.app.yf.data.model.SearchRequestResponse
+import ru.app.yf.data.api.json.SearchRequestResponse
 import java.util.concurrent.TimeUnit
 
 object YouTubeClient {

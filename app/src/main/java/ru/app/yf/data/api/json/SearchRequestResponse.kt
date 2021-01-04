@@ -1,4 +1,4 @@
-package ru.app.yf.data.model
+package ru.app.yf.data.api.json
 
 import android.util.Log
 import io.reactivex.Observable
@@ -11,7 +11,7 @@ import ru.app.yf.data.model.Video
 import ru.app.yf.data.repository.NetworkState
 
 class SearchRequestResponse
-    (var items:MutableList<Video>,
+    (var items:List<Video>,
     val totalPages:Int,
     val totalResults:Int,
     val nextPageToken:String)
