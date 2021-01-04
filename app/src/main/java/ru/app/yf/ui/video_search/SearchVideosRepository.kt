@@ -1,6 +1,7 @@
 package ru.app.yf.ui.video_search
 
 import androidx.databinding.ObservableField
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.app.yf.data.api.YouTubeService
@@ -12,7 +13,7 @@ class SearchVideosRepository(private val youTubeClient:YouTubeService) {
 
     lateinit var videoDataSource: VideoDataSource
 
-    fun getDownloadVideosLiveData(compositeDisposable: CompositeDisposable,searchRequest:String): MutableLiveData<SearchRequestResponse>{
+    fun getDownloadVideosLiveData(compositeDisposable: CompositeDisposable,searchRequest:String): LiveData<SearchRequestResponse> {
         videoDataSource = VideoDataSource(youTubeClient,compositeDisposable)
         videoDataSource.fetchVideoPreviews(searchRequest)
         return videoDataSource.searchResponse

@@ -1,6 +1,7 @@
 package ru.app.yf.ui.video_search
 
 import androidx.databinding.ObservableField
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -11,7 +12,7 @@ class SearchVideosViewModel(private val searchVideosRepository: SearchVideosRepo
 
     private val disposables = CompositeDisposable()
 
-    val searchRequest:MutableLiveData<SearchRequestResponse> = searchVideosRepository.getDownloadVideosLiveData(disposables, searchRequest)
+    val searchRequest: LiveData<SearchRequestResponse> = searchVideosRepository.getDownloadVideosLiveData(disposables, searchRequest)
 
     val networkState : ObservableField<NetworkState> by lazy {
         searchVideosRepository.getVideoNetworkState()

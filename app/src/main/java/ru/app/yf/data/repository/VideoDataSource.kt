@@ -20,7 +20,7 @@ class VideoDataSource(
     val networkState: ObservableField<NetworkState>
         get() = _networkState                   //with this get, no need to implement get function to get networkSate
     private val search = MutableLiveData<SearchRequestResponse>()
-    val searchResponse: MutableLiveData<SearchRequestResponse>
+    val searchResponse: LiveData<SearchRequestResponse>
         get() = search
     private val playingVideo = MutableLiveData<Video>()
     val playingVideoResponse: LiveData<Video>
