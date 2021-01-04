@@ -14,7 +14,7 @@ class SearchVideosRepository(private val youTubeClient:YouTubeService) {
 
     fun getDownloadVideosLiveData(compositeDisposable: CompositeDisposable,searchRequest:String): MutableLiveData<SearchRequestResponse>{
         videoDataSource = VideoDataSource(youTubeClient,compositeDisposable)
-        videoDataSource.fetchVideos(searchRequest)
+        videoDataSource.fetchVideoPreviews(searchRequest)
         return videoDataSource.searchResponse
     }
 
@@ -23,7 +23,7 @@ class SearchVideosRepository(private val youTubeClient:YouTubeService) {
     }
 
     fun updateDownloadVideosLiveData(searchRequest:String){
-        videoDataSource.fetchVideos(searchRequest)
+        videoDataSource.fetchVideoPreviews(searchRequest)
     }
 
 }

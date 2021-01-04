@@ -70,7 +70,7 @@ class SearchRequestResponseDeserializer : JsonDeserializer<SearchRequestResponse
         val videoListResponse  =
             SearchRequestResponse(videoList,totalPages,totalResults,nextPageToken)
 
-        Log.e("Serialization", "Total pages : $totalPages, total results : $totalResults,next page token - ${YouTubeClient.NEXT_PAGE_TOKEN} videolist: ${videoList}")
+//        Log.e("Serialization", "Total pages : $totalPages, total results : $totalResults,next page token - ${YouTubeClient.NEXT_PAGE_TOKEN} videolist: ${videoList}")
 
         return videoListResponse
     }

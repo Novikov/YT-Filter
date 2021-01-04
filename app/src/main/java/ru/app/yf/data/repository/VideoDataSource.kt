@@ -1,5 +1,4 @@
 package ru.app.yf.data.repository
-
 import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
@@ -13,7 +12,6 @@ import ru.app.yf.data.api.YouTubeClient
 import ru.app.yf.data.api.YouTubeService
 import ru.app.yf.data.model.SearchRequestResponse
 import ru.app.yf.data.model.Video
-
 class VideoDataSource(
     private val youTubeClient: YouTubeService,
     private val compositeDisposable: CompositeDisposable
@@ -21,20 +19,16 @@ class VideoDataSource(
     private val _networkState = ObservableField<NetworkState>(NetworkState.WAITING)
     val networkState: ObservableField<NetworkState>
         get() = _networkState                   //with this get, no need to implement get function to get networkSate
-
     private val search = MutableLiveData<SearchRequestResponse>()
     val searchResponse: MutableLiveData<SearchRequestResponse>
-    get() = search
-
+        get() = search
     private val playingVideo = MutableLiveData<Video>()
     val playingVideoResponse: LiveData<Video>
         get() = playingVideo
 
-
-    fun fetchVideos(query: String) {
+    fun fetchVideoPreviews(query: String) {
         _networkState.set(NetworkState.LOADING)
         Log.e("NetworkState", networkState.get()?.status.toString())
-
         try {
             compositeDisposable.add(Observable.defer {
                 youTubeClient.searchRequest(
@@ -56,95 +50,85 @@ class VideoDataSource(
                         YouTubeClient.getApiKey()
                     }
                 }
-
                 .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
-                .subscribe ({ videoInit(it)},{errorHandle(it)}))
+                .subscribe ({ videosPreviewContentInit(it)},{errorHandle(it)}))
         } catch (e: Exception) {
             Log.e("fetchVideos", e.message)
         }
     }
-
-    fun videoInit(searchRequestResponse: SearchRequestResponse) {
-        try {
-        compositeDisposable.add(
-            Observable.fromIterable(searchRequestResponse.items)
-                .flatMap { videoInfoWrapper(it.videoId) }
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    searchRequestResponse.items = it
-                    Log.e("new videosId",searchRequestResponse.items.toString())
-                    search.postValue(searchRequestResponse)
-//                    downloadedVideosList.postValue(searchRequestResponse.items)
-                    _networkState.set(NetworkState.LOADED)
-                    Log.e("NetworkState", networkState.get()?.status.toString())
-                    _networkState.set(NetworkState.WAITING)
-                    Log.e("NetworkState", networkState.get()?.status.toString())
-                }, {
-                    errorHandle(it)
-                })
-        )
-        } catch (e: Exception) {
-            Log.e("fetchVideos", e.message)
-        }
-    }
-
-    fun SearchRequestResponse.videosContentInit(youTubeClient: YouTubeService,
-                                                callback: () -> Unit)
-    {
-        compositeDisposable.add(Observable.fromIterable(this.items)
-            .flatMap {videoInfoWrapper(it.videoId) }
-            .toList()
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-
-                this.items = it
-                Log.e("new videosId",this.items.toString())
-                search.postValue(this)
-//                    downloadedVideosList.postValue(searchRequestResponse.items)
-                _networkState.set(NetworkState.LOADED)
-                Log.e("NetworkState", networkState.get()?.status.toString())
-                _networkState.set(NetworkState.WAITING)
-                Log.e("NetworkState", networkState.get()?.status.toString())
-            }, {
-                errorHandle(it)
-            }))
-    }
-
-
-    fun videoInfoWrapper(videoId: String): Observable<Video> {
-        return Observable.defer {
-            youTubeClient.videoInfo(
-                YouTubeClient.URL_SNIPPET,
-                YouTubeClient.URL_STATISTICS,
-                YouTubeClient.URL_CONTENT_DETAILS,
-                videoId,
-                YouTubeClient.API_KEY
-            )
-        }
-            .subscribeOn(Schedulers.io())
-            .doOnNext { Log.e("APIX", "attempt videoInfoWrapper") }
-            .doOnError {
-                if (ApiLimitCracker.getCountOfAvaliableApiKeys() > 0) {
-                    Log.e(
-                        "APIX",
-                        "doONError videoInfoWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()} "
-                                + "\n changing api key..."
-                    )
-                    YouTubeClient.getApiKey()
-                }
-            }
-            .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
-            .map { it.item }
-    }
-
-    fun getPlayingVideo(videoId: String) {
-        _networkState.set(NetworkState.LOADING)
-        Log.e("NetworkState", networkState.get()?.status.toString())
-
+    private fun videosPreviewContentInit(searchRequestResponse: SearchRequestResponse) {
         try {
             compositeDisposable.add(
-                videoInfoWrapper(videoId)
+                Observable.fromIterable(searchRequestResponse.items)
+                    .flatMap { Observable.defer {
+                        youTubeClient.videoInfo(
+                            YouTubeClient.URL_SNIPPET,
+                            YouTubeClient.URL_STATISTICS,
+                            YouTubeClient.URL_CONTENT_DETAILS,
+                            it.videoId,
+                            YouTubeClient.API_KEY
+                        )
+                    }
+                        .subscribeOn(Schedulers.io())
+                        .doOnNext { Log.e("APIX", "attempt videoInfoWrapper") }
+                        .doOnError {
+                            if (ApiLimitCracker.getCountOfAvaliableApiKeys() > 0) {
+                                Log.e(
+                                    "APIX",
+                                    "doONError videoInfoWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()} "
+                                            + "\n changing api key..."
+                                )
+                                YouTubeClient.getApiKey()
+                            }
+                        }
+                        .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
+                        .map { it.item } }
+                    .toList()
+                    .subscribeOn(Schedulers.io())
+                    .subscribe({
+                        searchRequestResponse.items = it
+                        Log.e("new videosId",searchRequestResponse.items.toString())
+                        search.postValue(searchRequestResponse)
+                        _networkState.set(NetworkState.LOADED)
+                        Log.e("NetworkState", networkState.get()?.status.toString())
+                        _networkState.set(NetworkState.WAITING)
+                        Log.e("NetworkState", networkState.get()?.status.toString())
+                    }, {
+                        errorHandle(it)
+                    })
+            )
+        } catch (e: Exception) {
+            Log.e("fetchVideos", e.message)
+        }
+    }
+    fun videoPlayerContentInit(videoId: String) {
+        _networkState.set(NetworkState.LOADING)
+        Log.e("NetworkState", networkState.get()?.status.toString())
+        try {
+            compositeDisposable.add(
+                Observable.defer {
+                    youTubeClient.videoInfo(
+                        YouTubeClient.URL_SNIPPET,
+                        YouTubeClient.URL_STATISTICS,
+                        YouTubeClient.URL_CONTENT_DETAILS,
+                        videoId,
+                        YouTubeClient.API_KEY
+                    )
+                }
+                    .subscribeOn(Schedulers.io())
+                    .doOnNext { Log.e("APIX", "attempt videoInfoWrapper") }
+                    .doOnError {
+                        if (ApiLimitCracker.getCountOfAvaliableApiKeys() > 0) {
+                            Log.e(
+                                "APIX",
+                                "doONError videoInfoWrapper, attempts available: ${ApiLimitCracker.getCountOfAvaliableApiKeys()} "
+                                        + "\n changing api key..."
+                            )
+                            YouTubeClient.getApiKey()
+                        }
+                    }
+                    .retry(ApiLimitCracker.getCountOfAvaliableApiKeys().toLong())
+                    .map { it.item }
                     .subscribe({
                         Log.e("playingVideo", it.toString())
                         playingVideo.postValue(it)
@@ -160,15 +144,12 @@ class VideoDataSource(
             Log.e("fetchVideos", e.message)
         }
     }
-
-
     private fun errorHandle(it: Throwable) {
         if (it is CompositeException) {
             for (ex in it.exceptions) {
                 ex.printStackTrace()
             }
         }
-
         when {
             it.message.toString().contains("HTTP 403") -> {
                 _networkState.set(NetworkState.API_LIMIT_EXCEEDED)
@@ -186,12 +167,10 @@ class VideoDataSource(
                 _networkState.set(NetworkState.ERROR)
                 Log.e("NetworkState", networkState.get()?.status.toString())
             }
-
         }
         _networkState.set(NetworkState.WAITING)
         Log.e("NetworkState", networkState.get()?.status.toString())
         Log.e("fetchVideos error", it.message)
         it.printStackTrace()
-
     }
 }
